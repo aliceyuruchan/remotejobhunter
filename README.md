@@ -1,0 +1,205 @@
+# Remote Job Hunter
+
+自动化每日远程职位搜索工具。按你的简历和偏好，每天自动搜索、匹配、验证并邮件推送适合的远程岗位。
+
+**适用于任何职业方向** — 软件工程师、产品经理、设计师、数据分析师、市场营销……安装时填入你的简历，脚本会自动适配。
+
+Automated daily remote job search tool. Searches, matches, verifies, and emails you suitable remote jobs daily based on your resume and preferences.
+
+**Works for any career path** — Software Engineer, Product Manager, Designer, Data Analyst, Marketing... Paste your resume during setup and the script adapts automatically.
+
+---
+
+## 功能 Features
+
+- 🔍 **多来源搜索** Multi-source search：RemoteOK API、Remotive API、Greenhouse/Lever ATS、网页搜索 Web search
+- 🎯 **智能匹配** Smart matching：按你的技能、年限、兴趣打分排序 Score by skills, years, interests
+- ✅ **岗位验证** Job verification：自动检测岗位是否还在招聘 Auto-detect closed jobs
+- 📧 **邮件报告** Email reports：每日发送匹配结果 + 求职信草稿 Daily matches + cover letter drafts
+- 🌍 **地区过滤由用户决定** User-controlled location filter：安装时选择模式 Choose mode at setup — 不会自动过滤任何地区 no automatic region filtering
+- 📅 **7 天去重** 7-day deduplication：同一岗位一周内不重复推送 No duplicate jobs within 7 days
+
+---
+
+## 快速开始 Quick Start
+
+### 1. 克隆仓库 Clone
+
+```bash
+git clone https://github.com/aliceyuruchan/remotejobhunter.git
+cd remotejobhunter
+```
+
+### 2. 运行安装脚本 Run setup
+
+```bash
+python3 setup.py
+```
+
+安装脚本会交互式地问你 / Setup script will ask you interactively:
+
+1. **基本信息 Basic info**：姓名、职位（如 "Software Engineer"、"Product Designer"）Name, job title
+2. **简历（可选 Resume optional）**：粘贴简历文本，脚本会自动提取技能、年限、关键词 Paste resume text for auto-extraction
+3. **技能和兴趣 Skills & interests**：用于匹配打分 Used for matching score
+4. **地区过滤 Location filter**：选择过滤模式（不过滤 / 只排除 / 优先全球），自定义包含/排除关键词 Choose filter mode, customize include/exclude keywords
+5. **邮箱配置 Email config**：用于接收每日报告（支持 Gmail，需使用 App Password）For daily reports (Gmail App Password required)
+6. **定时设置 Schedule**：每天几点自动跑（如 `9:00`）What time to run daily
+
+### 3. 手动测试 Test manually
+
+```bash
+python3 daily_scheduler.py
+```
+
+### 4. 之后每天自动跑 Runs automatically every day
+
+安装时设置的 cron 任务会自动执行。也可以在 WorkBuddy/Codex 里设置 Automation 定时运行。
+
+The cron job set during installation runs automatically. You can also set up an Automation in WorkBuddy/Codex.
+
+---
+
+## 配置文件说明 Config File (`config.json`)
+
+安装后自动生成 `config.json`，结构如下 / Automatically generated after setup:
+
+```json
+{
+  "profile": {
+    "name": "Your Name",
+    "title": "Your Target Job Title",
+    "years_experience": 5,
+    "skills": ["python", "product design", "AI tools"],
+    "interests": ["remote work", "B2B SaaS"],
+    "dealbreakers": ["on-site required"],
+    "languages": ["English", "Chinese"],
+    "resume_summary": "Resume summary...",
+    "portfolio_url": "https://...",
+    "contact_email": "your@email.com"
+  },
+  "search": {
+    "location_filter": {
+      "mode": "exclude_only",
+      "include_regions": [],
+      "exclude_keywords": ["us only", "united states only"]
+    },
+    "keywords": ["software engineer", "backend developer", "python"],
+    "daily_target": 5
+  }
+}
+```
+
+`search.keywords` 由 `setup.py` 根据你的 `title` 和 `skills` 自动生成，也可手动修改。
+
+`search.keywords` is auto-generated from your `title` and `skills` by `setup.py`, and can be manually edited.
+
+---
+
+## 搜索来源 Search Sources
+
+| 来源 Source | 类型 Type | 说明 Notes |
+|------|------|------|
+| RemoteOK | API | 免费，无需密钥 Free, no key needed |
+| Remotive | API | 免费，无需密钥 Free, no key needed |
+| Greenhouse | ATS | 公司招聘系统，直接拉取 Company ATS, direct fetch |
+| Lever | ATS | 公司招聘系统，直接拉取 Company ATS, direct fetch |
+| 网页搜索 Web search | IQS工具 IQS tool | 可选，需配置路径 Optional, path config required |
+
+在 `config.json` 的 `search.platforms` 里启用/禁用各个来源。
+
+Enable/disable sources in `config.json` → `search.platforms`.
+
+---
+
+## 地区过滤 Location Filter
+
+安装时 `setup.py` 会问你选择哪种地区过滤模式 / `setup.py` asks you to choose a location filter mode:
+
+| 模式 Mode | 说明 Notes |
+|------|------|
+| **All** | 不过滤，展示所有远程岗位 No filtering, show all remote jobs |
+| **Exclude only** | 只排除包含排除关键词的岗位（如 `us only`），保留其他所有 Only exclude jobs matching exclude keywords |
+| **Include global** | 优先包含地区关键词的岗位（如 `worldwide`、`asia`），同时排除排除关键词 Prioritize jobs mentioning preferred regions, also exclude unwanted regions |
+
+三种模式下，排除关键词和包含关键词都由**用户自己填写**，脚本不会默认过滤任何地区。
+
+In all three modes, include/exclude keywords are **set by the user**. The script does not filter any region by default.
+
+配置示例 Config example:
+```json
+"location_filter": {
+  "mode": "exclude_only",
+  "include_regions": [],
+  "exclude_keywords": ["us only", "united states only", "us residents only"]
+}
+```
+
+---
+
+## 其他过滤规则 Other Filters
+
+脚本还会过滤 / The script also filters:
+
+- ❌ 已关闭的岗位（通过 verify 检测）Closed jobs (detected via verification)
+- ❌ 垃圾/诈骗岗位 Spam/scam jobs
+
+---
+
+## 邮件报告示例 Email Report Example
+
+```
+Subject: 🎯 Remote Job Matches — 2026-06-26
+
+Top 5 Matches:
+1. [92分 Score] Senior Product Designer @ Automattic
+   $95K-$200K · Worldwide Remote
+   https://automattic.com/...
+
+2. [85分 Score] Product Designer @ ChartMogul
+   $100K-$150K · Asia+Europe Only
+   ...
+
+Attached: cover_letter_Automattic_2026-06-26.md
+```
+
+---
+
+## 常见问题 FAQ
+
+**Q: 支持中国用户吗？Does it work for users in China?**
+A: 支持。安装时选择地区过滤模式，可以排除 US-only 岗位或优先全球远程的职位。默认不会自动过滤任何地区。
+Yes. Choose location filter mode during setup to exclude US-only jobs or prioritize worldwide remote. No region is filtered by default.
+
+**Q: 需要付费订阅求职网站吗？Do I need paid job board subscriptions?**
+A: 不需要。使用的都是免费公开 API 和公司官网 ATS。
+No. All sources are free public APIs and company ATS pages.
+
+**Q: 能自动投递吗？Can it auto-apply?**
+A: 目前只生成求职信草稿，不自动投递（`auto_apply.enabled: false`）。
+Currently only generates cover letter drafts, does not auto-apply (`auto_apply.enabled: false`).
+
+**Q: 我是 XX 职业，能用吗？I'm a [XX profession], can I use this?**
+A: 能。`setup.py` 会根据你的职位和技能自动生成搜索关键词，不限定设计师。
+Yes. `setup.py` auto-generates search keywords from your title and skills. Not limited to designers.
+
+---
+
+## 依赖 Dependencies
+
+- Python 3.7+
+- 标准库（无需 pip install）Standard library only (no pip install needed)
+- 可选 Optional：`pdfplumber`（简历 PDF 自动解析 resume PDF parsing）
+- 可选 Optional：`iqs-tool`（网页搜索增强 web search enhancement）
+
+---
+
+## License
+
+MIT – 自由使用、修改、分发。Free to use, modify, and distribute.
+
+---
+
+## 发布 Links
+
+- GitHub: https://github.com/aliceyuruchan/remotejobhunter
+- 欢迎 PR 和 Issue / PRs and Issues welcome
