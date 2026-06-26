@@ -21,41 +21,62 @@ Automated daily remote job search tool. Searches, matches, verifies, and emails 
 
 ---
 
-## 快速开始 Quick Start
+## 3 步快速开始 Quick Start (3 Steps)
 
-### 1. 克隆仓库 Clone
+### Step 1: 安装 Install
 
 ```bash
+# 从 ClawHub 安装 / Install from ClawHub
+openclaw skills install @aliceyuruchan/remotejobhunter
+
+# 或手动克隆 / Or clone manually
 git clone https://github.com/aliceyuruchan/remotejobhunter.git
 cd remotejobhunter
 ```
 
-### 2. 运行安装脚本 Run setup
+### Step 2: 配置 Configure (2 种方式 2 ways)
 
+**方式 A：快速配置（推荐）Quick setup (recommended)**
+```bash
+python3 setup.py --quick --name "Your Name" --title "Product Designer" --email "you@example.com" --skills "Figma,UI/UX,Product Design"
+```
+
+**方式 B：交互式配置 Interactive setup**
 ```bash
 python3 setup.py
 ```
+按提示回答即可。支持粘贴简历自动提取信息。
 
-安装脚本会交互式地问你 / Setup script will ask you interactively:
+### Step 3: 运行 Run
 
-1. **基本信息 Basic info**：姓名、职位（如 "Software Engineer"、"Product Designer"）Name, job title
-2. **简历（可选 Resume optional）**：粘贴简历文本，脚本会自动提取技能、年限、关键词 Paste resume text for auto-extraction
-3. **技能和兴趣 Skills & interests**：用于匹配打分 Used for matching score
-4. **地区过滤 Location filter**：选择过滤模式（不过滤 / 只排除 / 优先全球），自定义包含/排除关键词 Choose filter mode, customize include/exclude keywords
-5. **邮箱配置 Email config**：用于接收每日报告（支持 Gmail，需使用 App Password）For daily reports (Gmail App Password required)
-6. **定时设置 Schedule**：每天几点自动跑（如 `9:00`）What time to run daily
+**即时搜索（不发送邮件，结果直接显示）Instant search (console output, no email):**
+```bash
+python3 run_now.py
+```
 
-### 3. 手动测试 Test manually
-
+**完整流程（搜索 + 匹配 + 验证 + 邮件报告）Full pipeline with email:**
 ```bash
 python3 daily_scheduler.py
 ```
 
-### 4. 之后每天自动跑 Runs automatically every day
+**设置每日定时 Daily schedule:**
+```bash
+# 安装时已自动配置 cron，或手动设置 / Cron is auto-configured during setup, or set manually:
+crontab -e
+# 添加 / Add: 0 9 * * * cd /path/to/remotejobhunter && python3 daily_scheduler.py
+```
 
-安装时设置的 cron 任务会自动执行。也可以在 WorkBuddy/Codex 里设置 Automation 定时运行。
+---
 
-The cron job set during installation runs automatically. You can also set up an Automation in WorkBuddy/Codex.
+## 进阶命令 Advanced Commands
+
+| 命令 Command | 说明 Description |
+|---|---|
+| `python3 run_now.py` | 即时搜索，结果输出到控制台 Instant search, console output |
+| `python3 daily_scheduler.py --dry-run` | 完整流程但不发邮件，仅控制台输出 Full pipeline, no email, console only |
+| `python3 daily_scheduler.py --no-email` | 完整流程但跳过邮件发送 Full pipeline, skip email |
+| `python3 daily_scheduler.py --output-json results.json` | 同时保存结果为 JSON Also save results to JSON |
+| `python3 setup.py --quick --name "X" --title "Y" --email "Z"` | 非交互式快速配置 Non-interactive quick setup |
 
 ---
 

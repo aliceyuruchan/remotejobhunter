@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
 """
-Remote Job Hunter - Interactive setup script.
-Creates config.json from user input or resume PDF.
-Supports auto-generating search keywords from profile.
+Remote Job Hunter - Setup script.
+Creates config.json from user input, resume PDF, or command-line arguments.
+Supports interactive and non-interactive (quick) modes.
 """
+import argparse
 import json
 import os
 import platform
@@ -307,10 +308,12 @@ def create_config():
                         "contact_email": email
                     },
                     "search": {
-                        "platforms": [
+                        "api_sources": [
                             {"name": "RemoteOK", "url": "https://remoteok.com/api", "enabled": True, "type": "remoteok"},
                             {"name": "Remotive", "url": "https://remotive.com/api/remote-jobs", "enabled": True, "type": "remotive", "category": "design"}
                         ],
+                        "ats_sources": [],
+                        "official_sources": [],
                         "location_filter": location_filter,
                         "keywords": search_keywords,
                         "max_results_per_platform": 8,
@@ -377,10 +380,12 @@ def create_config():
             "contact_email": email
         },
         "search": {
-            "platforms": [
+            "api_sources": [
                 {"name": "RemoteOK", "url": "https://remoteok.com/api", "enabled": True, "type": "remoteok"},
                 {"name": "Remotive", "url": "https://remotive.com/api/remote-jobs", "enabled": True, "type": "remotive", "category": "design"}
             ],
+            "ats_sources": [],
+            "official_sources": [],
             "location_filter": location_filter,
             "keywords": search_keywords,
             "max_results_per_platform": 8,
@@ -447,15 +452,112 @@ def setup_cron():
         print(f"Error setting up cron: {e}")
 
 
+def quick_setup(args):
+    """Non-interactive setup from command-line arguments."""
+    print("\n=== Remote Job Hunter Quick Setup ===\n")
+
+    name = args.name or "User"
+    title = args.title or "Remote Worker"
+    email = args.email or ""
+    skills = [s.strip() for s in args.skills.split(",")] if args.skills else ["remote work"]
+    interests = [s.strip() for s in args.interests.split(",")] if args.interests else ["remote work"]
+    years = args.years or 3
+    location_mode = args.location_mode or "all"
+
+    search_keywords = generate_search_keywords(title, skills)
+
+    location_filter = {"mode": location_mode, "include_regions": [], "exclude_keywords": []}
+    if location_mode == "exclude_only":
+        location_filter["exclude_keywords"] = ["us only", "united states only", "us residents only"]
+    elif location_mode == "include_global":
+        location_filter["include_regions"] = ["worldwide", "global", "anywhere", "international", "apac", "asia"]
+        location_filter["exclude_keywords"] = ["us only", "united states only"]
+
+    config = {
+        "profile": {
+            "name": name,
+            "title": title,
+            "years_experience": years,
+            "skills": skills,
+            "interests": interests,
+            "dealbreakers": ["on-site required", "no remote"],
+            "languages": ["English"],
+            "resume_summary": args.summary or f"{title} with {years}+ years experience.",
+            "portfolio_url": args.portfolio or "",
+            "contact_email": email
+        },
+        "search": {
+            "api_sources": [
+                {"name": "RemoteOK", "url": "https://remoteok.com/api", "enabled": True, "type": "remoteok"},
+                {"name": "Remotive", "url": "https://remotive.com/api/remote-jobs", "enabled": True, "type": "remotive"}
+            ],
+            "ats_sources": [],
+            "official_sources": [],
+            "location_filter": location_filter,
+            "keywords": search_keywords,
+            "max_results_per_platform": 8,
+            "time_range": "OneWeek",
+            "daily_target": 5
+        },
+        "cover_letter": {
+            "style": "professional_warm",
+            "language": "bilingual",
+            "max_length": 400,
+            "tone": "confident but not arrogant, shows genuine interest"
+        },
+        "auto_apply": {"enabled": False, "platforms": [], "note": "Experimental."},
+        "email": {
+            "smtp_host": args.smtp_host or "smtp.gmail.com",
+            "smtp_port": args.smtp_port or 587,
+            "smtp_user": args.smtp_user or email,
+            "smtp_pass": args.smtp_pass or ""
+        }
+    }
+
+    config_path = Path(__file__).resolve().parent / "config.json"
+    with open(config_path, "w", encoding="utf-8") as f:
+        json.dump(config, f, ensure_ascii=False, indent=2)
+    print(f"Config saved to: {config_path}")
+    print(f"Search keywords: {', '.join(search_keywords)}")
+    print(f"Location mode: {location_mode}")
+    if not email:
+        print("\nNote: No email provided. Email reports are disabled until you set email in config.json.")
+    print("\nNext steps:")
+    print("  Test run:   python3 run_now.py --dry-run")
+    print("  Daily run:  python3 daily_scheduler.py")
+    return config_path
+
+
 def main():
-    config_path = create_config()
-    if platform.system() != "Windows":
-        setup_cron()
+    parser = argparse.ArgumentParser(description="Remote Job Hunter Setup")
+    parser.add_argument("--quick", action="store_true", help="Non-interactive quick setup")
+    parser.add_argument("--name", type=str, help="Your full name")
+    parser.add_argument("--title", type=str, help="Job title (e.g. 'Product Designer')")
+    parser.add_argument("--email", type=str, help="Email for reports")
+    parser.add_argument("--skills", type=str, help="Comma-separated skills")
+    parser.add_argument("--interests", type=str, help="Comma-separated interests")
+    parser.add_argument("--years", type=int, help="Years of experience")
+    parser.add_argument("--summary", type=str, help="Resume summary")
+    parser.add_argument("--portfolio", type=str, help="Portfolio URL")
+    parser.add_argument("--location-mode", type=str, choices=["all", "exclude_only", "include_global"], help="Location filter mode")
+    parser.add_argument("--smtp-host", type=str, help="SMTP host")
+    parser.add_argument("--smtp-port", type=int, help="SMTP port")
+    parser.add_argument("--smtp-user", type=str, help="SMTP username")
+    parser.add_argument("--smtp-pass", type=str, help="SMTP password")
+    args = parser.parse_args()
+
+    if args.quick:
+        config_path = quick_setup(args)
     else:
-        print("\nOn Windows, set up a Scheduled Task manually.")
+        config_path = create_config()
+        if platform.system() != "Windows":
+            setup_cron()
+        else:
+            print("\nOn Windows, set up a Scheduled Task manually.")
     print("\nSetup complete!")
-    print("Run manually: python daily_scheduler.py")
-    print(f"Or wait for the scheduled cron job.")
+    if not args.quick:
+        print("Run manually: python3 daily_scheduler.py")
+        print("Or wait for the scheduled cron job.")
 
 
 if __name__ == "__main__":

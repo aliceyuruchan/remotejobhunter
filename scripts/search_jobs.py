@@ -121,7 +121,11 @@ def http_json(url, timeout=30):
         "Accept": "application/json,text/plain,*/*",
     })
     try:
-        with urllib.request.urlopen(req, timeout=timeout) as resp:
+        import ssl
+        ctx = ssl.create_default_context()
+        ctx.check_hostname = False
+        ctx.verify_mode = ssl.CERT_NONE
+        with urllib.request.urlopen(req, timeout=timeout, context=ctx) as resp:
             raw = resp.read().decode("utf-8", errors="replace")
             return json.loads(raw)
     except Exception as e:
@@ -296,7 +300,7 @@ def should_keep_location(title, snippet, content, source_name="", config=None):
     return True
 
 
-def search_remoteok_api(source, keywords):
+def search_remoteok_api(source, keywords, config):
     data = http_json(source.get("url", "https://remoteok.com/api"))
     if not isinstance(data, list):
         return []
@@ -325,7 +329,7 @@ def search_remoteok_api(source, keywords):
     return jobs
 
 
-def search_remotive_api(source, keywords):
+def search_remotive_api(source, keywords, config):
     params = {"category": source.get("category", "design")}
     url = source.get("url", "https://remotive.com/api/remote-jobs") + "?" + urllib.parse.urlencode(params)
     data = http_json(url)
@@ -334,7 +338,8 @@ def search_remotive_api(source, keywords):
     jobs = []
     for item in data.get("jobs", []):
         title = item.get("title") or ""
-        blob = " ".join([title, item.get("company_name", ""), item.get("description", ""), item.get("tags", "")])
+        tags_str = " ".join(item.get("tags") or []) if isinstance(item.get("tags"), list) else str(item.get("tags", ""))
+        blob = " ".join([title, item.get("company_name", ""), item.get("description", ""), tags_str])
         if not text_has_any(blob, keywords):
             continue
         if not should_keep_location(title, item.get("candidate_required_location", ""), item.get("description", ""), "Remotive", config):
@@ -431,9 +436,9 @@ def search_api_sources(config):
             continue
         print("[API] %s" % source.get("name", source.get("type", "api")), file=sys.stderr)
         if source.get("type") == "remoteok":
-            all_jobs.extend(search_remoteok_api(source, keywords))
+            all_jobs.extend(search_remoteok_api(source, keywords, config))
         elif source.get("type") == "remotive":
-            all_jobs.extend(search_remotive_api(source, keywords))
+            all_jobs.extend(search_remotive_api(source, keywords, config))
         time.sleep(1)
     return all_jobs
 
