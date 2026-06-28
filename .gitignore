@@ -1,0 +1,31 @@
+# Personal data
+config.json
+history.json
+reports/
+cover-letters/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+env/
+venv/
+
+# Node / npm
+node_modules/
+npm-debug.log*
+package-lock.json
+
+# IDE
+.vscode/
+.idea/
+
+# Env
+.env
+.env.*
+
+# OS
+.DS_Store
+Thumbs.db

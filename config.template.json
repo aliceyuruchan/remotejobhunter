@@ -1,0 +1,57 @@
+{
+  "profile": {
+    "name": "{{NAME}}",
+    "title": "{{TITLE}}",
+    "years_experience": {{YEARS}},
+    "skills": {{SKILLS}},
+    "interests": {{INTERESTS}},
+    "dealbreakers": {{DEALBREAKERS}},
+    "languages": {{LANGUAGES}},
+    "resume_summary": "{{RESUME_SUMMARY}}",
+    "portfolio_url": "{{PORTFOLIO_URL}}",
+    "contact_email": "{{EMAIL}}"
+  },
+  "search": {
+    "platforms": [
+      {
+        "name": "RemoteOK",
+        "url": "https://remoteok.com/api",
+        "enabled": true,
+        "type": "remoteok"
+      },
+      {
+        "name": "Remotive",
+        "url": "https://remotive.com/api/remote-jobs",
+        "enabled": true,
+        "type": "remotive",
+        "category": "design"
+      }
+    ],
+  "location_filter": {
+    "mode": "{{LOCATION_MODE}}",
+    "include_regions": {{INCLUDE_REGIONS}},
+    "exclude_keywords": {{EXCLUDE_KEYWORDS}}
+  },
+  "keywords": {{KEYWORDS}},
+  "max_results_per_platform": 8,
+  "time_range": "OneWeek",
+  "daily_target": 5
+  },
+  "cover_letter": {
+    "style": "professional_warm",
+    "language": "bilingual",
+    "max_length": 400,
+    "tone": "confident but not arrogant, shows genuine interest"
+  },
+  "auto_apply": {
+    "enabled": false,
+    "platforms": [],
+    "note": "Experimental. Requires playwright installation and manual login setup."
+  },
+  "email": {
+    "smtp_host": "smtp.gmail.com",
+    "smtp_port": 587,
+    "smtp_user": "{{EMAIL}}",
+    "smtp_pass": "{{SMTP_PASSWORD}}"
+  }
+}
