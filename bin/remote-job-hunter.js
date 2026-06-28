@@ -21,7 +21,7 @@ function printHelp() {
   console.log(`Remote Job Hunter
 
 Usage:
-  remote-job-hunter setup        Create config.json interactively
+  remote-job-hunter setup        Resume-first setup for config.json
   remote-job-hunter run          Run search -> match -> verify -> email
   remote-job-hunter now          Run once without email and print matches
   remote-job-hunter search       Run only the search stage

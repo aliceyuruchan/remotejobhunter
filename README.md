@@ -34,18 +34,33 @@ git clone https://github.com/aliceyuruchan/remotejobhunter.git
 cd remotejobhunter
 ```
 
-### Step 2: 配置 Configure (2 种方式 2 ways)
+### Step 2: 配置 Configure
 
-**方式 A：快速配置（推荐）Quick setup (recommended)**
-```bash
-python3 setup.py --quick --name "Your Name" --title "Product Designer" --email "you@example.com" --skills "Figma,UI/UX,Product Design"
-```
-
-**方式 B：交互式配置 Interactive setup**
+**交互式配置（推荐）Interactive setup (recommended)**
 ```bash
 python3 setup.py
 ```
-按提示回答即可。支持粘贴简历自动提取信息。
+
+The setup flow starts from your resume:
+
+1. Upload/provide a resume file path, or paste resume text
+2. Review inferred job titles and choose your target roles
+3. Choose remote-region preference, including whether to filter US-only or EMEA-only jobs
+4. Choose the daily email report time
+5. Decide whether to run one test search immediately
+
+设置流程会从简历开始：
+
+1. 上传/提供简历路径，或粘贴简历文本
+2. 根据解析结果推荐岗位方向，并让你选择岗位意向
+3. 选择远程地区偏好，例如是否过滤 US-only 或 EMEA-only 岗位
+4. 选择每日邮件发送时间
+5. 询问是否立即试跑一次
+
+**非交互式快速配置 Quick setup**
+```bash
+python3 setup.py --quick --name "Your Name" --title "Product Designer" --email "you@example.com" --skills "Figma,UI/UX,Product Design"
+```
 
 ### Step 3: 运行 Run
 
@@ -76,6 +91,7 @@ crontab -e
 | `python3 daily_scheduler.py --dry-run` | 完整流程但不发邮件，仅控制台输出 Full pipeline, no email, console only |
 | `python3 daily_scheduler.py --no-email` | 完整流程但跳过邮件发送 Full pipeline, skip email |
 | `python3 daily_scheduler.py --output-json results.json` | 同时保存结果为 JSON Also save results to JSON |
+| `python3 setup.py` | 简历优先的交互式配置 Resume-first interactive setup |
 | `python3 setup.py --quick --name "X" --title "Y" --email "Z"` | 非交互式快速配置 Non-interactive quick setup |
 
 ---

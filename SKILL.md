@@ -36,7 +36,14 @@ Runs the complete pipeline and sends email report if matches are found. Use for 
 ```bash
 python3 setup.py
 ```
-Interactive setup. Use when config.json is missing or user wants to change settings.
+Resume-first interactive setup. Use when config.json is missing or user wants to change settings.
+
+The setup flow should ask the user to:
+1. Upload/provide a resume file path, or paste resume text
+2. Review inferred job titles and choose target job intention
+3. Choose remote-region preference, including whether to filter US-only or EMEA-only jobs
+4. Choose daily email report time and email settings
+5. Decide whether to run one dry-run search immediately
 
 ### 4. Quick Setup from Template (non-interactive)
 ```bash
@@ -47,14 +54,15 @@ Generates config.json without interactive prompts. Use when user provides info i
 ## Agent Usage Guide
 
 ### If user says "帮我搜一下远程工作" or "find me remote jobs":
-1. Check if `config.json` exists. If not, ask user for: name, job title, email.
+1. Check if `config.json` exists. If not, ask the user for a resume file or pasted resume text first.
 2. Run: `python3 run_now.py --dry-run`
 3. Show the user the top matches from the output.
 
 ### If user says "set up daily job alerts" or "每天帮我找":
 1. Ensure `config.json` exists (run setup.py if needed).
-2. Run: `python3 daily_scheduler.py` once to test.
-3. Help user set up cron or TRAE automation to run daily.
+2. Confirm target role, remote-region filters, report time, and email settings.
+3. Run: `python3 daily_scheduler.py --dry-run` once to test.
+4. Help user set up cron or an automation to run daily.
 
 ### If user wants to change keywords, skills, or filters:
 - Edit `config.json` directly — it's plain JSON. No need to re-run setup.
