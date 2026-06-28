@@ -11,6 +11,7 @@
     "scripts/",
     "setup.py",
     "daily_scheduler.py",
+    "run_now.py",
     "config.template.json",
     "README.md",
     "SKILL.md",

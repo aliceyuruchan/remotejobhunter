@@ -1,131 +1,115 @@
 ---
 name: remote-job-hunter
-description: Automates daily remote job search, matching, verification, and email reports based on the user's resume. This skill should be used when the user asks to set up automated job hunting, search for remote jobs daily, or wants a tool that automatically finds and emails suitable remote job matches. Triggers on keywords like "job hunter", "automate job search", "daily job search", "remote job automation", or "set up job hunting".
+description: "Automates daily remote job search, matching, and email reports. Invoke when the user asks to search remote jobs, find job matches, run job hunting, or set up daily job alerts. Triggers on keywords: 'job hunt', 'find remote jobs', 'search jobs', 'job alert', 'remote work', 'daily job search'."
 agent_created: true
 ---
 
 # Remote Job Hunter
 
-Automated daily remote job search tool. Searches, matches, verifies, and emails suitable remote jobs based on the user's resume and preferences. Works for any career path — Software Engineer, Product Manager, Designer, Data Analyst, Marketing, etc.
+Automated remote job search tool. Searches multiple sources, matches against user's profile, verifies job links are still open, and delivers reports via email or console.
 
-## Overview
+## When to Use
 
-This skill installs and configures a Python-based daily job hunter that:
+Invoke this skill when the user:
+- Asks to search for remote jobs or job opportunities
+- Wants to find job matches based on their resume/skills
+- Requests a daily job hunting setup or job alerts
+- Says keywords like "job hunt", "find remote jobs", "search jobs", "job alert", "remote work"
 
-1. Searches multiple sources (RemoteOK API, Remotive API, Greenhouse/Lever ATS, web search)
-2. Matches jobs against the user's resume/skills/interests with a scoring system
-3. Verifies jobs are still open (detects closed postings)
-4. Emails a daily report with top matches + cover letter drafts
-5. Deduplicates jobs within 7 days
-6. Lets the user control location filtering (no hardcoded region filtering)
+## Quick Commands
 
-## Workflow
+The skill provides these entry points for the agent to call directly:
 
-### Step 1: Run Setup
-
-After installing this skill, run the interactive setup script:
-
+### 1. Instant Job Search (run now, output to console)
 ```bash
-python3 setup.py
+python3 run_now.py --dry-run
 ```
+This runs the full pipeline (search -> match -> verify) and prints results to console without sending email. Use this when the user wants to see jobs immediately.
 
-The setup script asks:
-1. **Basic info**: Name, job title (e.g. "Software Engineer", "Product Designer")
-2. **Resume (optional)**: Paste resume text — the script auto-extracts skills, years, keywords
-3. **Skills & interests**: Used for matching score
-4. **Location filter**: Choose mode — `all` (no filter), `exclude_only` (only exclude keywords), `include_global` (prioritize preferred regions)
-5. **Email config**: For daily reports (Gmail App Password required)
-6. **Schedule**: What time to run daily (e.g. `9:00`)
-
-After setup, `config.json` is generated in the skill directory.
-
-### Step 2: Test Manually
-
+### 2. Full Pipeline with Email Report
 ```bash
 python3 daily_scheduler.py
 ```
+Runs the complete pipeline and sends email report if matches are found. Use for scheduled daily runs.
 
-This runs one full cycle: search → match → verify → email (if matches found).
-
-### Step 3: Schedule Daily Run
-
-The setup script can optionally add a cron job. To set it manually:
-
+### 3. Setup / Reconfigure
 ```bash
-# Edit crontab
-crontab -e
-# Add line (runs every day at 9:00 AM):
-0 9 * * * cd /path/to/skill && python3 daily_scheduler.py
+python3 setup.py
 ```
+Interactive setup. Use when config.json is missing or user wants to change settings.
 
-Or set up an Automation in WorkBuddy/Codex to run `daily_scheduler.py` on a daily schedule.
+### 4. Quick Setup from Template (non-interactive)
+```bash
+python3 setup.py --quick --name "User Name" --title "Job Title" --email "user@example.com"
+```
+Generates config.json without interactive prompts. Use when user provides info inline.
+
+## Agent Usage Guide
+
+### If user says "帮我搜一下远程工作" or "find me remote jobs":
+1. Check if `config.json` exists. If not, ask user for: name, job title, email.
+2. Run: `python3 run_now.py --dry-run`
+3. Show the user the top matches from the output.
+
+### If user says "set up daily job alerts" or "每天帮我找":
+1. Ensure `config.json` exists (run setup.py if needed).
+2. Run: `python3 daily_scheduler.py` once to test.
+3. Help user set up cron or TRAE automation to run daily.
+
+### If user wants to change keywords, skills, or filters:
+- Edit `config.json` directly — it's plain JSON. No need to re-run setup.
+- Key fields to modify:
+  - `search.keywords` — what jobs to search for
+  - `profile.skills` — your skills for matching
+  - `search.location_filter` — region preferences
+  - `email.*` — where to send reports
+
+## Configuration
+
+`config.json` controls all behavior. Key sections:
+
+| Section | Purpose |
+|---------|---------|
+| `profile` | Name, title, skills, interests, dealbreakers |
+| `search.keywords` | Search terms (auto-generated from title + skills) |
+| `search.location_filter` | Region filtering mode and keywords |
+| `search.platforms` | Which job sources to query |
+| `email` | SMTP settings for daily reports |
+| `cover_letter` | Style settings for cover letter drafts |
+
+### Location Filter Modes
+- `"all"` — no filtering, show all remote jobs
+- `"exclude_only"` — only remove jobs matching exclusion keywords
+- `"include_global"` — prioritize preferred regions + exclude unwanted
 
 ## File Structure
 
 ```
 remote-job-hunter/
-├── SKILL.md              # This file
-├── config.template.json  # Template for user config
-├── setup.py              # Interactive setup script
-├── daily_scheduler.py    # Daily run entry point
+├── SKILL.md              # Agent instructions (this file)
+├── run_now.py            # Instant search entry point (agent-friendly)
+├── daily_scheduler.py    # Full pipeline with email
+├── setup.py              # Interactive or quick setup
+├── config.json           # User configuration (generated)
+├── config.template.json  # Config template
 ├── scripts/
-│   ├── search_jobs.py    # Search multiple sources
-│   ├── match_jobs.py     # Score jobs against profile
-│   ├── verify_jobs.py    # Verify jobs are still open
-│   └── send_email.py     # Send email report
-└── README.md             # User-facing documentation (bilingual EN/CN)
+│   ├── search_jobs.py    # Multi-source search
+│   ├── match_jobs.py     # Resume-to-job scoring
+│   ├── verify_jobs.py    # Link verification
+│   └── send_email.py     # Email reports
+└── README.md             # Human documentation
 ```
-
-## Configuration
-
-`config.json` (auto-generated by `setup.py`) controls all behavior:
-
-- `profile.*` — user's name, title, skills, interests, dealbreakers
-- `search.keywords` — auto-generated from title + skills, editable
-- `search.location_filter` — user-controlled location filtering
-  - `mode`: `"all"` | `"exclude_only"` | `"include_global"`
-  - `include_regions`: list of preferred region keywords
-  - `exclude_keywords`: list of keywords to exclude
-- `search.platforms` — enable/disable sources
-- `email.*` — SMTP config for reports
-
-## Key Design Decisions
-
-- **No hardcoded profession**: Search keywords are generated from the user's `title` + `skills` in `config.json`, not hardcoded.
-- **No forced region filtering**: Location filter mode and keywords are chosen by the user during setup. The script does not default-exclude any region.
-- **7-day deduplication**: Jobs are tracked in `history.json` with a cooldown period, not permanent exclusion.
-- **Free sources only**: All search sources are free public APIs or company ATS pages. No paid job board subscriptions required.
 
 ## Troubleshooting
 
-**Setup script asks for Gmail App Password:**
-Gmail requires an "App Password", not your login password. Generate one at https://myaccount.google.com/apppasswords
+**No config.json found:** Run `python3 setup.py` or `python3 setup.py --quick` with required flags.
 
-**No jobs found:**
-- Check `config.json` → `search.keywords` — are they too specific?
-- Try changing `location_filter.mode` to `"all"`
-- Check `search.platforms` — are sources enabled?
+**No jobs found:** Check `config.json` -> `search.keywords`. Try setting `location_filter.mode` to `"all"`.
 
-**Email not received:**
-- Check spam folder
-- Verify SMTP config in `config.json`
-- Run `python3 daily_scheduler.py` manually and check console output
+**Email not received:** Check spam folder; verify SMTP credentials in `config.json`.
 
-## Resources
-
-### scripts/
-Executable Python scripts for each stage of the pipeline:
-- `search_jobs.py` — multi-source job search
-- `match_jobs.py` — resume-to-job matching and scoring
-- `verify_jobs.py` — job status verification
-- `send_email.py` — SMTP email sending
-
-### references/
-(None currently — the skill is self-contained in SKILL.md and scripts.)
-
-### assets/
-(None currently.)
+**SMTP / Gmail App Password:** Generate at https://myaccount.google.com/apppasswords
 
 ---
 
-**License**: MIT — free to use, modify, distribute.
+**License**: MIT-0

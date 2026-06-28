@@ -10,6 +10,7 @@ const command = args[0] || "run";
 const commands = {
   setup: ["setup.py"],
   run: ["daily_scheduler.py"],
+  now: ["run_now.py"],
   search: ["scripts/search_jobs.py"],
   match: ["scripts/match_jobs.py"],
   verify: ["scripts/verify_jobs.py"],
@@ -22,6 +23,7 @@ function printHelp() {
 Usage:
   remote-job-hunter setup        Create config.json interactively
   remote-job-hunter run          Run search -> match -> verify -> email
+  remote-job-hunter now          Run once without email and print matches
   remote-job-hunter search       Run only the search stage
   remote-job-hunter match        Run only the match stage, reading JSON from stdin
   remote-job-hunter verify       Run only the verification stage, reading JSON from stdin

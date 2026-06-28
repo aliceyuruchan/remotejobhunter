@@ -106,7 +106,7 @@ def main():
             continue
         scored.append({"title": job.get("title", ""), "company": job.get("company", ""), "url": job.get("url", ""), "platform": job.get("platform", ""), "snippet": job.get("snippet", ""), "score": score, "details": details})
     scored.sort(key=lambda x: x["score"], reverse=True)
-    print(json.dumps({"date": search_data.get("date", ""), "total_jobs": len(jobs), "excluded": excluded_count, "scored": len(scored), "matches": scored[:daily_target]}, ensure_ascii=False, indent=2))
+    print(json.dumps({"date": search_data.get("date", ""), "total_searched": search_data.get("total_searched", 0), "total_jobs": len(jobs), "excluded": excluded_count, "scored": len(scored), "matches": scored[:daily_target]}, ensure_ascii=False, indent=2))
 
 if __name__ == "__main__":
     main()
