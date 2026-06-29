@@ -42,6 +42,20 @@ DEFAULT_EXCLUDE_KEYWORDS = [
     "must be based in the united states", "must reside in the united states",
 ]
 
+STRICT_LOCATION_EXCLUDE_KEYWORDS = [
+    "remotely in the united states", "remote in the united states",
+    "remote within the united states", "remote from the united states",
+    "remote anywhere in the us", "remote anywhere in the u.s.",
+    "us hubs", "u.s. hubs", "one of our us hubs", "one of our u.s. hubs",
+    "usa/emea", "usa / emea", "us/emea", "us / emea",
+    "canada only", "canada remote only", "remotely in canada", "remote in canada",
+    "uk only", "united kingdom only", "uk remote only", "remotely in the uk",
+    "emea only", "europe only", "eu only",
+    "must be authorized to work in the united states",
+    "must be authorized to work in the country",
+    "authorized to work in the country for which you applied",
+]
+
 # SPAM keywords (kept as they are not sensitive)
 SPAM_TITLE_KEYWORDS = [
     "按摩", "约炮", "小姐", "上门服务", "喝茶", "全套", "特殊服务", "约喝茶",
@@ -102,10 +116,9 @@ def get_location_filter(config):
 
 def has_excluded_location(text, exclude_keywords):
     """Check if text contains any exclusion keyword."""
-    if not exclude_keywords:
-        return False
     text = (text or "").lower()
-    return any(kw in text for kw in exclude_keywords)
+    all_keywords = list(exclude_keywords or []) + STRICT_LOCATION_EXCLUDE_KEYWORDS
+    return any(kw.lower() in text for kw in all_keywords)
 
 
 def has_included_region(text, include_regions):
@@ -279,7 +292,7 @@ def should_keep_location(title, snippet, content, source_name="", config=None):
     blob = " ".join([title or "", snippet or "", content or "", source_name or ""])
 
     # Always check exclusion list (regardless of mode, unless "all")
-    if exclude_keywords and has_excluded_location(blob, exclude_keywords):
+    if has_excluded_location(blob, exclude_keywords):
         return False
 
     # Mode "exclude_only": done after exclusion check
