@@ -237,6 +237,7 @@ def ask_remote_region_filter():
         "us only", "u.s. only", "united states only", "us residents only",
         "authorized to work in the united states", "authorized to work in the us",
         "must be based in the united states", "must reside in the united states",
+        "usa/emea", "usa / emea", "us/emea", "us / emea",
     ]
     emea_only = [
         "emea only", "europe only", "eu only", "uk only", "united kingdom only",
@@ -641,11 +642,15 @@ def quick_setup(args):
     if location_mode == "exclude_only":
         location_filter["exclude_keywords"] = [
             "us only", "u.s. only", "united states only", "us residents only",
+            "usa/emea", "usa / emea", "us/emea", "us / emea",
             "emea only", "europe only", "eu only", "uk only",
         ]
     elif location_mode == "include_global":
         location_filter["include_regions"] = ["worldwide", "global", "anywhere", "international", "apac", "asia"]
-        location_filter["exclude_keywords"] = ["us only", "united states only", "emea only", "europe only"]
+        location_filter["exclude_keywords"] = [
+            "us only", "united states only", "usa/emea", "us/emea",
+            "emea only", "europe only",
+        ]
 
     config = build_config(
         name=name,
