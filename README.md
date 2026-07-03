@@ -140,6 +140,7 @@ crontab -e
 | Remotive | API | 免费，无需密钥 Free, no key needed |
 | Greenhouse | ATS | 公司招聘系统，直接拉取 Company ATS, direct fetch |
 | Lever | ATS | 公司招聘系统，直接拉取 Company ATS, direct fetch |
+| LinkedIn | MCP bridge | 可选，使用 `linkedin-mcp-search`，默认关闭以避免 rate limit Optional, powered by `linkedin-mcp-search`, disabled by default to avoid rate limits |
 | 网页搜索 Web search | IQS工具 IQS tool | 可选，需配置路径 Optional, path config required |
 
 在 `config.json` 的 `search.platforms` 里启用/禁用各个来源。

@@ -67,10 +67,11 @@ Generates config.json without interactive prompts. Use when user provides info i
 ### If user wants to change keywords, skills, or filters:
 - Edit `config.json` directly — it's plain JSON. No need to re-run setup.
 - Key fields to modify:
-  - `search.keywords` — what jobs to search for
-  - `profile.skills` — your skills for matching
-  - `search.location_filter` — region preferences
-  - `email.*` — where to send reports
+- `search.keywords` — what jobs to search for
+- `profile.skills` — your skills for matching
+- `search.location_filter` — region preferences
+- `search.api_sources` — job APIs; LinkedIn is available as an optional `type: "linkedin"` source powered by `linkedin-mcp-search`
+- `email.*` — where to send reports
 
 ## Configuration
 

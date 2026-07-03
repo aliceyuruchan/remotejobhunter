@@ -275,6 +275,7 @@ def default_search_sources():
             {"name": "Arbeitnow", "url": "https://www.arbeitnow.com/api/job-board-api", "enabled": True, "type": "arbeitnow"},
             {"name": "We Work Remotely Design RSS", "url": "https://weworkremotely.com/categories/remote-design-jobs.rss", "enabled": True, "type": "rss"},
             {"name": "We Work Remotely Product RSS", "url": "https://weworkremotely.com/categories/remote-product-jobs.rss", "enabled": True, "type": "rss"},
+            {"name": "LinkedIn Remote Jobs", "enabled": False, "type": "linkedin", "location": "Remote", "datePosted": "past-week", "limit": 10, "max_keywords": 5, "delay_seconds": 2},
         ],
         "ats_sources": [
             {"name": "Figma", "type": "greenhouse", "board": "figma", "enabled": True},

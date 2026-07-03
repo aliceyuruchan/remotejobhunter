@@ -1,6 +1,6 @@
 {
   "name": "remote-job-hunter",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "description": "Daily remote job search, matching, verification, and email reports.",
   "type": "module",
   "bin": {
@@ -33,5 +33,8 @@
   "engines": {
     "node": ">=18"
   },
-  "license": "MIT"
+  "license": "MIT",
+  "dependencies": {
+    "linkedin-mcp-search": "^1.0.3"
+  }
 }

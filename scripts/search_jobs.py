@@ -619,6 +619,66 @@ def search_rss_source(source, keywords, config):
     return jobs
 
 
+def search_linkedin_source(source, keywords, config):
+    bridge = Path(__file__).resolve().parent / "linkedin_search.mjs"
+    if not bridge.exists():
+        print("[WARN] LinkedIn bridge not found, skipping", file=sys.stderr)
+        return []
+    location = source.get("location", "Remote")
+    limit = str(source.get("limit", 10))
+    date_posted = source.get("datePosted", "past-week")
+    jobs = []
+    for keyword in keywords[: source.get("max_keywords", 6)]:
+        cmd = [
+            "node", str(bridge),
+            "--keywords", keyword,
+            "--location", location,
+            "--limit", limit,
+            "--datePosted", date_posted,
+        ]
+        try:
+            result = subprocess.run(cmd, capture_output=True, text=True, timeout=60)
+        except Exception as e:
+            print("[WARN] LinkedIn search failed: %s (%s)" % (keyword, e), file=sys.stderr)
+            continue
+        if result.returncode != 0:
+            print("[WARN] LinkedIn search failed: %s (%s)" % (keyword, result.stderr.strip()), file=sys.stderr)
+            continue
+        try:
+            data = json.loads(result.stdout)
+        except json.JSONDecodeError:
+            print("[WARN] LinkedIn returned invalid JSON for %s" % keyword, file=sys.stderr)
+            continue
+        for item in data.get("jobs", []):
+            title = item.get("title", "")
+            location_text = item.get("location", "")
+            snippet = " ".join([
+                item.get("company", ""),
+                location_text,
+                item.get("workplaceType", ""),
+                item.get("postedTimeAgo", ""),
+                "Easy Apply" if item.get("isEasyApply") else "",
+            ])
+            content = " ".join([snippet, item.get("salary", "")])
+            if not text_has_any(" ".join([title, snippet, content]), keywords):
+                continue
+            if not should_keep_location(title, location_text, content, "LinkedIn", config):
+                continue
+            jobs.append(make_job(
+                title=title,
+                url=item.get("url", ""),
+                snippet=snippet,
+                content=content,
+                platform="LinkedIn",
+                company=item.get("company", ""),
+                keyword=keyword,
+                relevance=1,
+                source_type="linkedin",
+            ))
+        time.sleep(float(source.get("delay_seconds", 1.5)))
+    return jobs
+
+
 def search_api_sources(config):
     all_jobs = []
     keywords = config["search"].get("keywords", [])
@@ -638,6 +698,8 @@ def search_api_sources(config):
             all_jobs.extend(search_himalayas_api(source, keywords, config))
         elif source.get("type") == "rss":
             all_jobs.extend(search_rss_source(source, keywords, config))
+        elif source.get("type") == "linkedin":
+            all_jobs.extend(search_linkedin_source(source, keywords, config))
         time.sleep(1)
     return all_jobs
 
