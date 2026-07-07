@@ -1,6 +1,6 @@
 {
   "name": "remote-job-hunter",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "description": "Daily remote job search, matching, verification, and email reports.",
   "type": "module",
   "bin": {
