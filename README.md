@@ -1,239 +1,27 @@
 # Remote Job Hunter
 
-自动化每日远程职位搜索工具。按你的简历和偏好，每天自动搜索、匹配、验证并邮件推送适合的远程岗位。
+If you have any questions about using this skill, feel free to email me at **aliceyuruchan@gmail.com** or DM me on LinkedIn: **aliceyuruchan**.
 
-**适用于任何职业方向** — 软件工程师、产品经理、设计师、数据分析师、市场营销……安装时填入你的简历，脚本会自动适配。
+Remote Job Hunter is a resume-first job search automation tool. It searches remote job sources, matches roles against your resume and preferences, verifies links, deduplicates results, and sends a daily email report.
 
-Automated daily remote job search tool. Searches, matches, verifies, and emails you suitable remote jobs daily based on your resume and preferences.
+It works for many career paths: product design, UX research, software engineering, product management, data, marketing, operations, and more. During setup, it starts from your resume, infers possible roles, and asks you to confirm your job and remote-region preferences.
 
-**Works for any career path** — Software Engineer, Product Manager, Designer, Data Analyst, Marketing... Paste your resume during setup and the script adapts automatically.
+## Features
 
----
+- Multi-source search: RemoteOK, Remotive, Jobicy, Himalayas, Arbeitnow, We Work Remotely RSS, Greenhouse, Ashby, Lever, and optional LinkedIn.
+- Resume-first onboarding: upload/provide a resume file path or paste resume text.
+- Role inference: suggests possible target roles from your resume.
+- Smart matching: scores jobs by title relevance, skills, experience, interests, and remote fit.
+- Region filtering: can filter US-only, EMEA-only, Canada-only, UK-only, and other restricted remote roles.
+- Job verification: checks whether matched job links are still active.
+- Email reports: sends a daily report with top matches.
+- 7-day deduplication: avoids repeating the same job within a cooldown window.
 
-## 功能 Features
+## Install
 
-- 🔍 **多来源搜索** Multi-source search：RemoteOK API、Remotive API、Greenhouse/Lever ATS、网页搜索 Web search
-- 🎯 **智能匹配** Smart matching：按你的技能、年限、兴趣打分排序 Score by skills, years, interests
-- ✅ **岗位验证** Job verification：自动检测岗位是否还在招聘 Auto-detect closed jobs
-- 📧 **邮件报告** Email reports：每日发送匹配结果 + 求职信草稿 Daily matches + cover letter drafts
-- 🌍 **地区过滤由用户决定** User-controlled location filter：安装时选择模式 Choose mode at setup — 不会自动过滤任何地区 no automatic region filtering
-- 📅 **7 天去重** 7-day deduplication：同一岗位一周内不重复推送 No duplicate jobs within 7 days
+### npm
 
----
-
-## 3 步快速开始 Quick Start (3 Steps)
-
-### Step 1: 安装 Install
-
-```bash
-# 从 ClawHub 安装 / Install from ClawHub
-openclaw skills install @aliceyuruchan/remotejobhunter
-
-# 或手动克隆 / Or clone manually
-git clone https://github.com/aliceyuruchan/remotejobhunter.git
-cd remotejobhunter
-```
-
-### Step 2: 配置 Configure
-
-**交互式配置（推荐）Interactive setup (recommended)**
-```bash
-python3 setup.py
-```
-
-The setup flow starts from your resume:
-
-1. Upload/provide a resume file path, or paste resume text
-2. Review inferred job titles and choose your target roles
-3. Choose remote-region preference, including whether to filter US-only or EMEA-only jobs
-4. Choose the daily email report time
-5. Decide whether to run one test search immediately
-
-设置流程会从简历开始：
-
-1. 上传/提供简历路径，或粘贴简历文本
-2. 根据解析结果推荐岗位方向，并让你选择岗位意向
-3. 选择远程地区偏好，例如是否过滤 US-only 或 EMEA-only 岗位
-4. 选择每日邮件发送时间
-5. 询问是否立即试跑一次
-
-**非交互式快速配置 Quick setup**
-```bash
-python3 setup.py --quick --name "Your Name" --title "Product Designer" --email "you@example.com" --skills "Figma,UI/UX,Product Design"
-```
-
-### Step 3: 运行 Run
-
-**即时搜索（不发送邮件，结果直接显示）Instant search (console output, no email):**
-```bash
-python3 run_now.py
-```
-
-**完整流程（搜索 + 匹配 + 验证 + 邮件报告）Full pipeline with email:**
-```bash
-python3 daily_scheduler.py
-```
-
-**设置每日定时 Daily schedule:**
-```bash
-# 安装时已自动配置 cron，或手动设置 / Cron is auto-configured during setup, or set manually:
-crontab -e
-# 添加 / Add: 0 9 * * * cd /path/to/remotejobhunter && python3 daily_scheduler.py
-```
-
----
-
-## 进阶命令 Advanced Commands
-
-| 命令 Command | 说明 Description |
-|---|---|
-| `python3 run_now.py` | 即时搜索，结果输出到控制台 Instant search, console output |
-| `python3 daily_scheduler.py --dry-run` | 完整流程但不发邮件，仅控制台输出 Full pipeline, no email, console only |
-| `python3 daily_scheduler.py --no-email` | 完整流程但跳过邮件发送 Full pipeline, skip email |
-| `python3 daily_scheduler.py --output-json results.json` | 同时保存结果为 JSON Also save results to JSON |
-| `python3 setup.py` | 简历优先的交互式配置 Resume-first interactive setup |
-| `python3 setup.py --quick --name "X" --title "Y" --email "Z"` | 非交互式快速配置 Non-interactive quick setup |
-
----
-
-## 配置文件说明 Config File (`config.json`)
-
-安装后自动生成 `config.json`，结构如下 / Automatically generated after setup:
-
-```json
-{
-  "profile": {
-    "name": "Your Name",
-    "title": "Your Target Job Title",
-    "years_experience": 5,
-    "skills": ["python", "product design", "AI tools"],
-    "interests": ["remote work", "B2B SaaS"],
-    "dealbreakers": ["on-site required"],
-    "languages": ["English", "Chinese"],
-    "resume_summary": "Resume summary...",
-    "portfolio_url": "https://...",
-    "contact_email": "your@email.com"
-  },
-  "search": {
-    "location_filter": {
-      "mode": "exclude_only",
-      "include_regions": [],
-      "exclude_keywords": ["us only", "united states only"]
-    },
-    "keywords": ["software engineer", "backend developer", "python"],
-    "daily_target": 5
-  }
-}
-```
-
-`search.keywords` 由 `setup.py` 根据你的 `title` 和 `skills` 自动生成，也可手动修改。
-
-`search.keywords` is auto-generated from your `title` and `skills` by `setup.py`, and can be manually edited.
-
----
-
-## 搜索来源 Search Sources
-
-| 来源 Source | 类型 Type | 说明 Notes |
-|------|------|------|
-| RemoteOK | API | 免费，无需密钥 Free, no key needed |
-| Remotive | API | 免费，无需密钥 Free, no key needed |
-| Greenhouse | ATS | 公司招聘系统，直接拉取 Company ATS, direct fetch |
-| Lever | ATS | 公司招聘系统，直接拉取 Company ATS, direct fetch |
-| LinkedIn | MCP bridge | 可选，使用 `linkedin-mcp-search`，默认关闭以避免 rate limit Optional, powered by `linkedin-mcp-search`, disabled by default to avoid rate limits |
-| 网页搜索 Web search | IQS工具 IQS tool | 可选，需配置路径 Optional, path config required |
-
-在 `config.json` 的 `search.platforms` 里启用/禁用各个来源。
-
-Enable/disable sources in `config.json` → `search.platforms`.
-
----
-
-## 地区过滤 Location Filter
-
-安装时 `setup.py` 会问你选择哪种地区过滤模式 / `setup.py` asks you to choose a location filter mode:
-
-| 模式 Mode | 说明 Notes |
-|------|------|
-| **All** | 不过滤，展示所有远程岗位 No filtering, show all remote jobs |
-| **Exclude only** | 只排除包含排除关键词的岗位（如 `us only`），保留其他所有 Only exclude jobs matching exclude keywords |
-| **Include global** | 优先包含地区关键词的岗位（如 `worldwide`、`asia`），同时排除排除关键词 Prioritize jobs mentioning preferred regions, also exclude unwanted regions |
-
-三种模式下，排除关键词和包含关键词都由**用户自己填写**，脚本不会默认过滤任何地区。
-
-In all three modes, include/exclude keywords are **set by the user**. The script does not filter any region by default.
-
-配置示例 Config example:
-```json
-"location_filter": {
-  "mode": "exclude_only",
-  "include_regions": [],
-  "exclude_keywords": ["us only", "united states only", "us residents only"]
-}
-```
-
----
-
-## 其他过滤规则 Other Filters
-
-脚本还会过滤 / The script also filters:
-
-- ❌ 已关闭的岗位（通过 verify 检测）Closed jobs (detected via verification)
-- ❌ 垃圾/诈骗岗位 Spam/scam jobs
-
----
-
-## 邮件报告示例 Email Report Example
-
-```
-Subject: 🎯 Remote Job Matches — 2026-06-26
-
-Top 5 Matches:
-1. [92分 Score] Senior Product Designer @ Automattic
-   $95K-$200K · Worldwide Remote
-   https://automattic.com/...
-
-2. [85分 Score] Product Designer @ ChartMogul
-   $100K-$150K · Asia+Europe Only
-   ...
-
-Attached: cover_letter_Automattic_2026-06-26.md
-```
-
----
-
-## 常见问题 FAQ
-
-**Q: 支持中国用户吗？Does it work for users in China?**
-A: 支持。安装时选择地区过滤模式，可以排除 US-only 岗位或优先全球远程的职位。默认不会自动过滤任何地区。
-Yes. Choose location filter mode during setup to exclude US-only jobs or prioritize worldwide remote. No region is filtered by default.
-
-**Q: 需要付费订阅求职网站吗？Do I need paid job board subscriptions?**
-A: 不需要。使用的都是免费公开 API 和公司官网 ATS。
-No. All sources are free public APIs and company ATS pages.
-
-**Q: 能自动投递吗？Can it auto-apply?**
-A: 目前只生成求职信草稿，不自动投递（`auto_apply.enabled: false`）。
-Currently only generates cover letter drafts, does not auto-apply (`auto_apply.enabled: false`).
-
-**Q: 我是 XX 职业，能用吗？I'm a [XX profession], can I use this?**
-A: 能。`setup.py` 会根据你的职位和技能自动生成搜索关键词，不限定设计师。
-Yes. `setup.py` auto-generates search keywords from your title and skills. Not limited to designers.
-
----
-
-## 依赖 Dependencies
-
-- Python 3.7+
-- 标准库（无需 pip install）Standard library only (no pip install needed)
-- 可选 Optional：`pdfplumber`（简历 PDF 自动解析 resume PDF parsing）
-- 可选 Optional：`iqs-tool`（网页搜索增强 web search enhancement）
-
----
-
-## npm CLI
-
-After publishing to npm, users can run:
+Run directly:
 
 ```bash
 npx remote-job-hunter setup
@@ -246,25 +34,237 @@ Or install globally:
 ```bash
 npm install -g remote-job-hunter
 remote-job-hunter setup
+remote-job-hunter now
 remote-job-hunter run
 ```
 
-Commands:
+### GitHub
 
-- `setup` creates `config.json`
-- `now` runs once without email and prints matches
-- `run` runs the full daily workflow and sends the email report
-- `search`, `match`, `verify`, and `email` run individual pipeline stages
+```bash
+git clone https://github.com/aliceyuruchan/remotejobhunter.git
+cd remotejobhunter
+python3 setup.py
+```
 
----
+## Setup Flow
+
+Interactive setup is recommended:
+
+```bash
+remote-job-hunter setup
+```
+
+The setup flow:
+
+1. Asks for a resume file path, or lets you paste resume text.
+2. Parses the resume and suggests possible target roles.
+3. Lets you choose job intentions and extra keywords.
+4. Asks for remote-region preferences, including whether to filter US-only or EMEA-only jobs.
+5. Asks for email settings and the daily report time.
+6. Asks whether to run one test search immediately.
+
+For non-interactive setup:
+
+```bash
+remote-job-hunter setup --quick \
+  --name "Your Name" \
+  --title "Product Designer" \
+  --email "you@example.com" \
+  --skills "Figma,UX Design,Product Design"
+```
+
+## Commands
+
+| Command | Description |
+|---|---|
+| `remote-job-hunter setup` | Resume-first interactive setup |
+| `remote-job-hunter now` | Run once without sending email and print matches |
+| `remote-job-hunter run` | Run the full daily workflow and send the email report |
+| `remote-job-hunter search` | Run only the search stage |
+| `remote-job-hunter match` | Run only the matching stage, reading JSON from stdin |
+| `remote-job-hunter verify` | Run only the verification stage, reading JSON from stdin |
+| `remote-job-hunter email` | Send/save report, reading matched JSON from stdin |
+
+Python entry points are also available:
+
+```bash
+python3 setup.py
+python3 run_now.py
+python3 daily_scheduler.py
+python3 daily_scheduler.py --dry-run
+python3 daily_scheduler.py --no-email
+python3 daily_scheduler.py --output-json results.json
+```
+
+## Configuration
+
+Setup generates a local `config.json`. Do not commit this file because it may contain personal email settings.
+
+Example:
+
+```json
+{
+  "profile": {
+    "name": "Your Name",
+    "title": "Product Designer",
+    "years_experience": 5,
+    "skills": ["Figma", "UX Design", "Product Design"],
+    "interests": ["remote work", "AI", "B2B SaaS"],
+    "dealbreakers": ["on-site required", "no remote"],
+    "resume_summary": "Resume summary...",
+    "portfolio_url": "https://...",
+    "contact_email": "you@example.com"
+  },
+  "search": {
+    "location_filter": {
+      "mode": "exclude_only",
+      "include_regions": [],
+      "exclude_keywords": ["us only", "united states only", "emea only"]
+    },
+    "keywords": ["product designer", "ux designer"],
+    "daily_target": 5
+  },
+  "email": {
+    "smtp_host": "smtp.gmail.com",
+    "smtp_port": 587,
+    "smtp_user": "you@example.com",
+    "smtp_pass": "your-app-password"
+  }
+}
+```
+
+## Search Sources
+
+| Source | Type | Notes |
+|---|---|---|
+| RemoteOK | API | Free, no key required |
+| Remotive | API | Free, no key required |
+| Jobicy | API | Remote job API |
+| Himalayas | API | Remote job API |
+| Arbeitnow | API | Job board API |
+| We Work Remotely | RSS | Design and product RSS feeds |
+| Greenhouse | ATS | Company career boards |
+| Ashby | ATS | Company career boards |
+| Lever | ATS | Company career boards |
+| LinkedIn | MCP bridge | Optional, powered by `linkedin-mcp-search`; disabled by default to avoid rate limits |
+| Web search | IQS tool | Optional, requires configuring an IQS tool path |
+
+## Region Filtering
+
+Remote Job Hunter can filter region-restricted remote jobs such as:
+
+- US-only
+- EMEA-only
+- Canada-only
+- UK-only
+- "remote within the United States"
+- "one of our US hubs"
+- "authorized to work in the country for which you applied"
+
+This is useful for people applying from outside the US or Europe. Jobs that merely mention Figma as a skill are preserved; the filter targets region restrictions, not design-tool keywords.
+
+## Email Reports
+
+For Gmail, use an App Password instead of your normal login password:
+
+https://myaccount.google.com/apppasswords
+
+If SMTP credentials are missing, the tool can still run search/match/verify and save an HTML report locally.
+
+## Privacy
+
+The generated files below may contain personal data and are ignored by git/npm packaging:
+
+- `config.json`
+- `history.json`
+- `reports/`
+- `cover-letters/`
+- `cron.log`
+
+## Troubleshooting
+
+**No config found**
+
+Run:
+
+```bash
+remote-job-hunter setup
+```
+
+**No jobs found**
+
+Try broadening `search.keywords`, lowering region restrictions, or setting `location_filter.mode` to `all`.
+
+**Email not received**
+
+Check spam, SMTP username/password, and whether your email provider requires an app password.
+
+**LinkedIn source not running**
+
+LinkedIn is optional and disabled by default in newly generated configs. Enable a source with `"type": "linkedin"` in `search.api_sources`. It uses `linkedin-mcp-search` and may be rate-limited by LinkedIn.
+
+## Links
+
+- GitHub: https://github.com/aliceyuruchan/remotejobhunter
+- npm: https://www.npmjs.com/package/remote-job-hunter
 
 ## License
 
-MIT – 自由使用、修改、分发。Free to use, modify, and distribute.
+MIT. Free to use, modify, and distribute.
 
 ---
 
-## 发布 Links
+# 中文说明
 
-- GitHub: https://github.com/aliceyuruchan/remotejobhunter
-- 欢迎 PR 和 Issue / PRs and Issues welcome
+如果你在使用这个 skill 时有任何疑问，欢迎发邮件给我：**aliceyuruchan@gmail.com**，也可以在 LinkedIn 上私信我：**aliceyuruchan**。
+
+Remote Job Hunter 是一个从简历开始的远程求职自动化工具。它会根据你的简历和偏好搜索远程岗位、打分匹配、验证岗位是否仍然开放、去重，并生成每日邮件报告。
+
+## 快速开始
+
+```bash
+npx remote-job-hunter setup
+npx remote-job-hunter now
+npx remote-job-hunter run
+```
+
+也可以全局安装：
+
+```bash
+npm install -g remote-job-hunter
+remote-job-hunter setup
+remote-job-hunter now
+remote-job-hunter run
+```
+
+## 配置流程
+
+推荐使用交互式配置：
+
+```bash
+remote-job-hunter setup
+```
+
+配置流程会：
+
+1. 要求你提供简历文件路径，或直接粘贴简历文本。
+2. 解析简历并推断适合的岗位方向。
+3. 让你选择岗位意向和额外关键词。
+4. 让你选择远程地区偏好，例如是否过滤 US-only / EMEA-only 岗位。
+5. 设置邮件和每日发送时间。
+6. 询问是否立即试跑一次。
+
+## 常用命令
+
+| 命令 | 说明 |
+|---|---|
+| `remote-job-hunter setup` | 从简历开始进行交互式配置 |
+| `remote-job-hunter now` | 立即试跑一次，不发送邮件，只在控制台显示结果 |
+| `remote-job-hunter run` | 执行完整每日流程，并发送邮件报告 |
+
+## 注意事项
+
+- `config.json` 可能包含邮箱和 app password，不要上传到 GitHub。
+- 如果使用 Gmail，请使用 App Password，不要使用普通登录密码。
+- LinkedIn 来源是可选的，默认关闭，因为 LinkedIn 可能会 rate limit。
+- 地区过滤会排除 US-only、EMEA-only、Canada-only、UK-only 等限制岗位，但不会误删只把 Figma 当作技能要求的岗位。

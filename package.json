@@ -4,7 +4,7 @@
   "description": "Daily remote job search, matching, verification, and email reports.",
   "type": "module",
   "bin": {
-    "remote-job-hunter": "./bin/remote-job-hunter.js"
+    "remote-job-hunter": "bin/remote-job-hunter.js"
   },
   "files": [
     "bin/",
