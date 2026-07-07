@@ -1,6 +1,8 @@
 # Remote Job Hunter
 
-If you have any questions about using this skill, feel free to email me at **aliceyuruchan@gmail.com** or DM me on LinkedIn: **aliceyuruchan**.
+If you have any questions about using this skill, feel free to email me at **aliceyuruchan@gmail.com** or DM me on LinkedIn: **https://www.linkedin.com/in/aliceyuruchan/**.
+
+Portfolio: **https://www.studio.aliceyuruchan.at**
 
 Remote Job Hunter is a resume-first job search automation tool. It searches remote job sources, matches roles against your resume and preferences, verifies links, deduplicates results, and sends a daily email report.
 
@@ -207,6 +209,8 @@ LinkedIn is optional and disabled by default in newly generated configs. Enable 
 
 - GitHub: https://github.com/aliceyuruchan/remotejobhunter
 - npm: https://www.npmjs.com/package/remote-job-hunter
+- Portfolio: https://www.studio.aliceyuruchan.at
+- LinkedIn: https://www.linkedin.com/in/aliceyuruchan/
 
 ## License
 
@@ -216,7 +220,9 @@ MIT. Free to use, modify, and distribute.
 
 # 中文说明
 
-如果你在使用这个 skill 时有任何疑问，欢迎发邮件给我：**aliceyuruchan@gmail.com**，也可以在 LinkedIn 上私信我：**aliceyuruchan**。
+如果你在使用这个 skill 时有任何疑问，欢迎发邮件给我：**aliceyuruchan@gmail.com**，也可以在 LinkedIn 上私信我：**https://www.linkedin.com/in/aliceyuruchan/**。
+
+个人作品集：**https://www.studio.aliceyuruchan.at**
 
 Remote Job Hunter 是一个从简历开始的远程求职自动化工具。它会根据你的简历和偏好搜索远程岗位、打分匹配、验证岗位是否仍然开放、去重，并生成每日邮件报告。
 
